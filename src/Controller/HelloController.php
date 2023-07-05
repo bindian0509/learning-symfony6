@@ -4,20 +4,34 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class HelloController {
+class HelloController extends AbstractController
+{
+    private array $messages = [
+        "Hello!", "Hola!", "Bonjour!", "Namaste!"
+    ];
 
-
-
-    private array $words = ["Am", "I ", "a", "computer?"];
-
-    #[Route('/', name: 'app_index')]
-    public function index() : Response {
-        return new Response("<h1>".implode(" : ", $this->words)."</h1>");
+    #[Route('/{limit?3}', name: 'app_index')]
+    public function index(int $limit): Response
+    {
+        return $this->render(
+            'hello/index.html.twig',
+            [
+                'message' => implode(',', array_slice($this->messages, 0, $limit))
+            ]
+        );
     }
 
-    #[Route('/messages/{id}', name: 'app_show', requirements: ['id' => '\d+'])]
-    public function showOne($id) : Response {
-        return new Response($this->words[$id]);
+    #[Route('/messages/{id<\d+>}', name: 'app_show_one')]
+    public function showOne(int $id): Response
+    {
+        return $this->render(
+            'hello/show_one.html.twig',
+            [
+                'message' => $this->messages[$id]
+            ]
+        );
+        // return new Response($this->messages[$id]);
     }
 }
